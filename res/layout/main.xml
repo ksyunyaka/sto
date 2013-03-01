@@ -7,7 +7,7 @@
 	<TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/" />
+        android:text="@string/app_name" />
 	
 	<TextView
         android:layout_width="fill_parent"
@@ -23,5 +23,16 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Hello World, STOActivity" />
+
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Test db from Egor" />
+
+    <Spinner
+            android:id="@+id/author_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
 </LinearLayout>
