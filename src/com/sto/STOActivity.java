@@ -1,12 +1,14 @@
 package com.sto;
 
 import android.app.Activity;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
 import com.sto.db.DBController;
 import com.sto.entity.STO;
 
@@ -14,51 +16,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-public class STOActivity extends Activity implements OnItemSelectedListener {
+public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener {
     /**
      * Called when the activity is first created.
      */
-
-    private static class DemoDetails {
-        /**
-         * The resource id of the title of the demo.
-         */
-        private final int titleId;
-
-        /**
-         * The resources id of the description of the demo.
-         */
-        private final int descriptionId;
-
-        /**
-         * The demo activity's class.
-         */
-        private final Class<? extends android.support.v4.app.FragmentActivity> activityClass;
-
-        public DemoDetails(int titleId, int descriptionId,
-                           Class<? extends android.support.v4.app.FragmentActivity> activityClass) {
-            super();
-            this.titleId = titleId;
-            this.descriptionId = descriptionId;
-            this.activityClass = activityClass;
-        }
-    }
-//	@Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        FeatureView featureView;
-//        if (convertView instanceof FeatureView) {
-//            featureView = (FeatureView) convertView;
-//        } else {
-//            featureView = new FeatureView(getContext());
-//        }
-//
-//        DemoDetails demo = getItem(position);
-//
-//        featureView.setTitleId(demo.titleId);
-//        featureView.setDescriptionId(demo.descriptionId);
-//
-//        return featureView;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,26 +35,58 @@ public class STOActivity extends Activity implements OnItemSelectedListener {
 
         spinner.setOnItemSelectedListener(this);
 
-        //test of db
+        SeekBar sb = (SeekBar)findViewById(R.id.radiusSeekBar);
+        sb.setMax(10);
+        sb.setProgress(5);
+        sb.setOnSeekBarChangeListener(this);
 
-        DBController dbController;
-        //is it ok to transfer inputStream
-        dbController = new DBController(this, getResources().openRawResource(R.raw.insert_statements));
-        dbController.open();
-        try {
-            List<STO> values = dbController.getAllSTOEntities();
+        final EditText start_address = (EditText)findViewById(R.id.postal_address);
+        View.OnClickListener listener = new View.OnClickListener() {
 
-            Spinner spinnerTest = (Spinner) findViewById(R.id.author_spinner);
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.gps_rb:
+                        Toast.makeText(getApplicationContext(), "Button 1 pressed", Toast.LENGTH_SHORT).show();
+                        start_address.setEnabled(false);
+                        LocationFinder location_finder =  new LocationFinder();
+                        location_finder.getLocation();
+                        break;
+                    case R.id.address_rb:
+                        Toast.makeText(getApplicationContext(), "Button 2 pressed", Toast.LENGTH_SHORT).show();
+                        start_address.setEnabled(true);
+                        break;
+                }
 
-            ArrayAdapter<STO> authorAdapter = new ArrayAdapter<STO>(this,
-                    android.R.layout.simple_spinner_dropdown_item, values);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerTest.setAdapter(authorAdapter);
-            spinnerTest.setOnItemSelectedListener(this);
-        } finally {
-            dbController.close();
+            }
+        };
 
-        }
+        ((Button)findViewById(R.id.gps_rb)).setOnClickListener(listener);
+        ((Button)findViewById(R.id.address_rb)).setOnClickListener(listener);
+
+//        //test of db
+
+//
+//        DBController dbController;
+//        //is it ok to transfer inputStream
+//        dbController = new DBController(this, getResources().openRawResource(R.raw.insert_statements));
+//        dbController.open();
+//        try {
+//            List<STO> values = dbController.getAllSTOEntities();
+//
+////            Spinner spinnerTest = (Spinner) findViewById(R.id.author_spinner);
+//
+//            ArrayAdapter<STO> authorAdapter = new ArrayAdapter<STO>(this,
+//                    android.R.layout.simple_spinner_dropdown_item, values);
+//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+////            spinnerTest.setAdapter(authorAdapter);
+////            spinnerTest.setOnItemSelectedListener(this);
+//        } finally {
+//            dbController.close();
+//
+//        }
+
+
 
     }
 
@@ -113,6 +106,22 @@ public class STOActivity extends Activity implements OnItemSelectedListener {
     public void onNothingSelected(AdapterView<?> parent) {
         // do nothing
 
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean isUser) {
+        TextView tv = (TextView)findViewById(R.id.seekBarStatus);
+        tv.setText(Integer.toString(progress+2)+" km");
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">sto</string>
-    <string name="hybrid">Hybrid</string>
-    <string name="normal">Normal</string>
-    <string name="satellite">Satellite</string>
-    <string name="terrain">Terrain</string>
+    <string name="app_name">Esteo - Справочная автосервисов</string>
+    <string name="main_screen_search">Что ищем?</string>
+    <string name="main_screen_service_type">Выберите тип сервиса?</string>
+    <string name="main_screen_start_address">Откуда начинать поиск?</string>
+    <string name="main_rb_gps">Мое местоположение</string>
+    <string name="main_rb_input_address">От адресса:</string>
+    <string name="main_screen_radius">Укажите радиус поиска сервиса в км</string>
+    <string name="main_screen_search_button">Найти!</string>
+
+    <string name="sto">СТО</string>
+    <string name="gas_station">Заправка</string>
+    <string name="auto_show">Автосалон</string>
+    <string name="tire_service">Шиномонтаж</string>
+    <string name="car_wash">Автомойка</string>
+
 
     <string-array name="layers_array">
-        <item>@string/normal</item>
-        <item>@string/hybrid</item>
-        <item>@string/satellite</item>
-        <item>@string/terrain</item>
+        <item>@string/sto</item>
+        <item>@string/gas_station</item>
+        <item>@string/auto_show</item>
+        <item>@string/tire_service</item>
+        <item>@string/car_wash</item>
     </string-array>
 
     <string name="layers_demo">Layers</string>
+
 
 </resources>
