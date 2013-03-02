@@ -1,20 +1,12 @@
 package com.sto;
 
 import android.app.Activity;
-import android.location.Location;
-import android.location.LocationManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
-import com.sto.db.DBController;
-import com.sto.entity.STO;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.List;
 
 public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener {
     /**
@@ -49,8 +41,6 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
                     case R.id.gps_rb:
                         Toast.makeText(getApplicationContext(), "Button 1 pressed", Toast.LENGTH_SHORT).show();
                         start_address.setEnabled(false);
-                        LocationFinder location_finder =  new LocationFinder();
-                        location_finder.getLocation();
                         break;
                     case R.id.address_rb:
                         Toast.makeText(getApplicationContext(), "Button 2 pressed", Toast.LENGTH_SHORT).show();
@@ -61,33 +51,27 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             }
         };
 
-        ((Button)findViewById(R.id.gps_rb)).setOnClickListener(listener);
-        ((Button)findViewById(R.id.address_rb)).setOnClickListener(listener);
+        findViewById(R.id.gps_rb).setOnClickListener(listener);
+        findViewById(R.id.address_rb).setOnClickListener(listener);
+        findViewById(R.id.main_screen_search_Button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                start();
+            }
+        });
 
 //        //test of db
-
-//
 //        DBController dbController;
-//        //is it ok to transfer inputStream
+//        //is it ok to transfer inputStream?
 //        dbController = new DBController(this, getResources().openRawResource(R.raw.insert_statements));
 //        dbController.open();
-//        try {
-//            List<STO> values = dbController.getAllSTOEntities();
 //
-////            Spinner spinnerTest = (Spinner) findViewById(R.id.author_spinner);
-//
-//            ArrayAdapter<STO> authorAdapter = new ArrayAdapter<STO>(this,
-//                    android.R.layout.simple_spinner_dropdown_item, values);
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-////            spinnerTest.setAdapter(authorAdapter);
-////            spinnerTest.setOnItemSelectedListener(this);
-//        } finally {
-//            dbController.close();
-//
-//        }
 
     }
 
+    private void start(){
+        startActivity(new Intent(this, LocationFinderActivity.class));
+    }
 
     @Override
     protected void onResume() {
@@ -106,7 +90,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     public void onProgressChanged(SeekBar seekBar, int progress, boolean isUser) {
         TextView tv = (TextView)findViewById(R.id.seekBarStatus);
         String value = null;
-        if(progress == 10){
+        if(progress == seekBar.getMax()){
             value ="max";
         }else {
             value = Integer.toString(progress+2)+" km";
