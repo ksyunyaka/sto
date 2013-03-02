@@ -86,8 +86,6 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 //
 //        }
 
-
-
     }
 
 
@@ -97,31 +95,30 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position,
-                               long id) {
-        //do nothing
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        // do nothing
-
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean isUser) {
         TextView tv = (TextView)findViewById(R.id.seekBarStatus);
-        tv.setText(Integer.toString(progress+2)+" km");
+        String value = null;
+        if(progress == 10){
+            value ="max";
+        }else {
+            value = Integer.toString(progress+2)+" km";
+        }
+        tv.setText(value);
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
-
 }
