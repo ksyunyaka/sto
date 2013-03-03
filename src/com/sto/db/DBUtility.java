@@ -1,6 +1,9 @@
 package com.sto.db;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,7 @@ public class DBUtility {
 
 
     public static List<String> getAllInsertStatements(InputStream insertStatementStream) {
-        List<String> statements = new ArrayList<>();
+        List<String> statements = new ArrayList<String>();
         BufferedReader bufferedReader = null;
         try {
 
