@@ -46,20 +46,21 @@
                 android:text="@string/main_rb_input_address"
                 android:id="@+id/address_rb"/>
     </RadioGroup>
-    <EditText
-            android:id="@+id/postal_address"
-            android:enabled="false"
+    <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:inputType="textPostalAddress"/>
+            android:layout_marginTop="10dp"
+            android:textSize="20sp">
+        <requestFocus>
+        </requestFocus>
+    </AutoCompleteTextView>
+
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:text="@string/main_screen_radius"/>
-
-
     <SeekBar
             android:paddingTop="20dip"
             android:gravity="center"

@@ -7,8 +7,9 @@ import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import com.sto.adapters.PlacesAutoCompleteAdapter;
 
-public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener {
+public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
     /**
      * Called when the activity is first created.
      */
@@ -51,6 +52,10 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             }
         };
 
+        AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_item));
+        autoCompView.setOnItemClickListener(this);
+
         findViewById(R.id.gps_rb).setOnClickListener(listener);
         findViewById(R.id.address_rb).setOnClickListener(listener);
         findViewById(R.id.main_screen_search_Button).setOnClickListener(new View.OnClickListener() {
@@ -67,6 +72,11 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 //        dbController.open();
 //
 
+    }
+
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        String str = (String) adapterView.getItemAtPosition(position);
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
     private void start(){
