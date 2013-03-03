@@ -1,117 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/main_screen_search"
-        android:textSize="25sp" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/main_screen_service_type"
-        android:textSize="20sp" />
-
-    <Spinner
-        android:id="@+id/layers_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/main_screen_start_address"
-        android:textSize="20sp" />
-
-    <RadioGroup
-        android:id="@+id/main_screen_radio_group"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/gps_rb"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
+            android:textSize="25dp"
             android:layout_height="wrap_content"
-            android:text="@string/main_rb_gps"
-            android:textSize="15sp" />
+            android:text="@string/main_screen_search"
+            android:gravity="center"/>
 
-        <RadioButton
-            android:id="@+id/address_rb"
+    <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/main_rb_input_address"
-            android:textSize="15sp" />
+            android:textSize="20dp"
+            android:text="@string/main_screen_service_type"/>
+
+    <Spinner
+            android:id="@+id/layers_spinner"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="@string/main_screen_start_address"/>
+    <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/main_screen_radio_group">
+        <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_rb_gps"
+                android:textSize="15dp"
+                android:id="@+id/gps_rb"/>
+        <RadioButton
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                android:text="@string/main_rb_input_address"
+                android:id="@+id/address_rb"/>
     </RadioGroup>
-
-    <EditText
-        android:id="@+id/postal_address"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:inputType="textPostalAddress"
-        android:textSize="20sp" />
-
     <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignRight="@+id/mapButton"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="10dp" >
-
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp">
         <requestFocus>
         </requestFocus>
     </AutoCompleteTextView>
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/main_screen_radius"
-        android:textSize="20sp" />
-
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="@string/main_screen_radius"/>
     <SeekBar
-        android:id="@+id/radiusSeekBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:max="30"
-        android:paddingTop="20dip"
-        android:progress="0"
-        
-        android:secondaryProgress="0" />
+            android:paddingTop="20dip"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:max="30"
+            android:progress="0"
+            android:secondaryProgress="0"
+            android:id="@+id/radiusSeekBar"
+            />
 
     <TextView
-        android:id="@+id/seekBarStatus"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="10dip"
-        android:text="7 km"
-        android:textColor="#000000"
-        android:textSize="16sp" />
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dip"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:text="7 km"
+            android:textSize="16sp"
+            android:id="@+id/seekBarStatus"/>
 
-    <!-- <Spinner -->
-    <!-- android:id="@+id/author_spinner" -->
-    <!-- android:layout_width="match_parent" -->
-    <!-- android:layout_height="wrap_content"/> -->
+    <!--<Spinner-->
+    <!--android:id="@+id/author_spinner"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"/>-->
 
     <Button
-        android:id="@+id/main_screen_search_Button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:clickable="true"
-        android:text="@string/main_screen_search_button"
-        android:textColorHighlight="@android:color/holo_green_dark"
-        android:textSize="20sp" />
-
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="@string/main_screen_search_button"
+            android:textColorHighlight="@android:color/holo_green_dark"
+            android:textSize="20dp"
+            android:id="@+id/main_screen_search_Button" android:layout_gravity="center"/>
 </LinearLayout>
