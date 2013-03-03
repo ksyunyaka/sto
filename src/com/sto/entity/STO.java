@@ -18,7 +18,8 @@ public class STO {
     private String title;
     private String description;
     private String category;
-
+    private float coordinateX;
+    private float coordinateY;
     public long getId() {
         return id;
     }
@@ -65,9 +66,17 @@ public class STO {
 
     public void setxFields(String xFields) {
         this.xFields = xFields;
+        parseCoordinate(xFields);
     }
 
-    public String getTitle() {
+    private void parseCoordinate(String coordinate) {
+	 coordinate= coordinate.replaceAll("||", "|");
+	  String [] coordArray = coordinate.split("|");
+	  coordinateX = Float.parseFloat(coordArray[1]);
+	  coordinateY = Float.parseFloat(coordArray[3]);	
+	}
+
+	public String getTitle() {
         return title;
     }
 
@@ -90,4 +99,8 @@ public class STO {
     public void setCategory(String category) {
         this.category = category;
     }
+    
+    
+    
+    
 }
