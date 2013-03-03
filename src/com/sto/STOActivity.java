@@ -52,7 +52,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             }
         };
 
-        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_item));
+        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.item_list));
         autoCompView.setOnItemClickListener(this);
 
         findViewById(R.id.gps_rb).setOnClickListener(listener);
