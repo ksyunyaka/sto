@@ -11,10 +11,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sto.db.DBController;
+import com.sto.entity.STO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -73,7 +80,20 @@ public class LocationFinderActivity extends FragmentActivity {
     private void setUpMap() {
         Location location = getLocation(LocationManager.GPS_PROVIDER);
 
-        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Marker"));
+        DBController dbController=new DBController(this,getResources().openRawResource(R.raw.insert_statements) );
+        dbController.open();
+
+
+        List<STO> allSTOEntities = dbController.getAllSTOEntities();
+        List<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
+        for( STO entity: allSTOEntities){
+            mMap.addMarker((new MarkerOptions().position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY())).title(entity.getTitle())));
+        }
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Me"));
+        CameraUpdate center= CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
+        mMap.moveCamera(center);
+        mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
     }
 
 

@@ -2,12 +2,18 @@ package com.sto;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import com.google.android.maps.GeoPoint;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
+
+import java.io.IOException;
+import java.util.List;
 
 public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
     /**
@@ -76,6 +82,28 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+
+        Geocoder geocoder = new Geocoder(getBaseContext());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocationName(str, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        Address address = (Address) addresses.get(1);
+        // Creating an instance of GeoPoint, to display in Google Map
+//        GeoPoint p = new GeoPoint(
+//                (int)(addresses.get(0).getLatitude()*1E6),
+//                (int)(addresses.get(0).getLongitude()*1E6)
+//        );
+//        System.out.println("coordinates are:" + p.getLongitudeE6() + p.getLatitudeE6());
+//        String addressText = String.format("%s, %s",
+// geocoder.getFromLocationName(str, 1)               address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+////                address.getCountryName());
+//        Toast.makeText(this, p.getLatitudeE6(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, p.getLongitudeE6(), Toast.LENGTH_SHORT).show();
+
     }
 
     private void start(){

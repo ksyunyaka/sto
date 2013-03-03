@@ -1,5 +1,7 @@
 package com.sto.entity;
 
+import android.util.Log;
+
 import java.util.Date;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Date;
  */
 public class STO {
 
-    private long  id;
+    private long id;
     private String author;
     private Date date;
     private String shortHistory;
@@ -20,6 +22,7 @@ public class STO {
     private String category;
     private float coordinateX;
     private float coordinateY;
+
     public long getId() {
         return id;
     }
@@ -70,13 +73,19 @@ public class STO {
     }
 
     private void parseCoordinate(String coordinate) {
-	 coordinate= coordinate.replaceAll("||", "|");
-	  String [] coordArray = coordinate.split("|");
-	  coordinateX = Float.parseFloat(coordArray[1]);
-	  coordinateY = Float.parseFloat(coordArray[3]);	
-	}
+//        if (coordinate.startsWith("crd")) {
+            coordinate = coordinate.replaceAll("\\|\\|", "\\|");
+            String[] coordArray = coordinate.split("\\|");
+            try {
+                coordinateX = Float.parseFloat(coordArray[3]);
+                coordinateY = Float.parseFloat(coordArray[1]);
+            } catch (Exception e) {
+                Log.e("STO", "parse", e);
+            }
+//        }
+    }
 
-	public String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -99,8 +108,12 @@ public class STO {
     public void setCategory(String category) {
         this.category = category;
     }
-    
-    
-    
-    
+
+    public float getCoordinateX() {
+        return coordinateX;
+    }
+
+    public float getCoordinateY() {
+        return coordinateY;
+    }
 }
