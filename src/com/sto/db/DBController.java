@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import com.sto.entity.STO;
+import com.sto.utils.StoUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class DBController {
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private InputStream insertStatementStream;
     // Database fields
@@ -111,7 +112,7 @@ public class DBController {
         entity.setxFields(cursor.getString(5));
         entity.setTitle(cursor.getString(6));
         entity.setDescription(cursor.getString(7));
-        entity.setCategory(cursor.getString(8));
+        entity.setCategory(StoUtils.parseCategory(cursor.getString(8)));
         return entity;
     }
 

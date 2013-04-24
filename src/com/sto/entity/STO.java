@@ -1,8 +1,9 @@
 package com.sto.entity;
 
-import android.util.Log;
+import com.sto.utils.StoUtils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +20,7 @@ public class STO {
     private String xFields;
     private String title;
     private String description;
-    private String category;
+    private List<STOCategory> category;
     private float coordinateX;
     private float coordinateY;
 
@@ -73,16 +74,9 @@ public class STO {
     }
 
     private void parseCoordinate(String coordinate) {
-//        if (coordinate.startsWith("crd")) {
-            coordinate = coordinate.replaceAll("\\|\\|", "\\|");
-            String[] coordArray = coordinate.split("\\|");
-            try {
-                coordinateX = Float.parseFloat(coordArray[3]);
-                coordinateY = Float.parseFloat(coordArray[1]);
-            } catch (Exception e) {
-                Log.e("STO", "parse", e);
-            }
-//        }
+        float[] coordinates = StoUtils.parseCoordinates(coordinate);
+        coordinateX = coordinates[0];
+        coordinateY = coordinates[1];
     }
 
     public String getTitle() {
@@ -101,11 +95,11 @@ public class STO {
         this.description = description;
     }
 
-    public String getCategory() {
+    public List<STOCategory> getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(List<STOCategory> category) {
         this.category = category;
     }
 

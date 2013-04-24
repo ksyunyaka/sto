@@ -2,8 +2,7 @@ package com.sto;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -11,14 +10,26 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.google.android.maps.GeoPoint;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
+
 
 public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
     /**
      * Called when the activity is first created.
      */
+    boolean isMyLocation = true;
+    double [] destinationAddress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,12 +45,12 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
         spinner.setOnItemSelectedListener(this);
 
-        SeekBar sb = (SeekBar)findViewById(R.id.radiusSeekBar);
+        SeekBar sb = (SeekBar) findViewById(R.id.radiusSeekBar);
         sb.setMax(10);
         sb.setProgress(5);
         sb.setOnSeekBarChangeListener(this);
 
-        final AutoCompleteTextView autoCompView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
+        final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         View.OnClickListener listener = new View.OnClickListener() {
 
             @Override
@@ -52,6 +63,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
                     case R.id.address_rb:
                         Toast.makeText(getApplicationContext(), "Button 2 pressed", Toast.LENGTH_SHORT).show();
                         autoCompView.setEnabled(true);
+                        isMyLocation = false;
                         break;
                 }
 
@@ -81,33 +93,17 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
 
-        Geocoder geocoder = new Geocoder(getBaseContext());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocationName(str, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-//        Address address = (Address) addresses.get(1);
-        // Creating an instance of GeoPoint, to display in Google Map
-//        GeoPoint p = new GeoPoint(
-//                (int)(addresses.get(0).getLatitude()*1E6),
-//                (int)(addresses.get(0).getLongitude()*1E6)
-//        );
-//        System.out.println("coordinates are:" + p.getLongitudeE6() + p.getLatitudeE6());
-//        String addressText = String.format("%s, %s",
-// geocoder.getFromLocationName(str, 1)               address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-////                address.getCountryName());
-//        Toast.makeText(this, p.getLatitudeE6(), Toast.LENGTH_SHORT).show();
-//        Toast.makeText(this, p.getLongitudeE6(), Toast.LENGTH_SHORT).show();
+        new GeoCode().execute(str);
 
     }
 
-    private void start(){
-        startActivity(new Intent(this, LocationFinderActivity.class));
+    private void start() {
+//        int[] addr = {destinationAddress.getLatitudeE6(), destinationAddress.getLongitudeE6()};
+        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
+        intent.putExtra("isMyLoc", isMyLocation);
+        intent.putExtra("destCoordinates", destinationAddress);
+        startActivity(intent);
     }
 
     @Override
@@ -125,12 +121,12 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean isUser) {
-        TextView tv = (TextView)findViewById(R.id.seekBarStatus);
+        TextView tv = (TextView) findViewById(R.id.seekBarStatus);
         String value = null;
-        if(progress == seekBar.getMax()){
-            value ="max";
-        }else {
-            value = Integer.toString(progress+2)+" km";
+        if (progress == seekBar.getMax()) {
+            value = "max";
+        } else {
+            value = Integer.toString(progress + 2) + " km";
         }
         tv.setText(value);
     }
@@ -142,4 +138,70 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
     }
+
+    private class GeoCode extends AsyncTask<String, Void, double[]> {
+        public JSONObject getLocationInfo(String address) {
+
+            HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?address=" + address + "&ka&sensor=false");
+            HttpClient client = new DefaultHttpClient();
+            HttpResponse response;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            try {
+                response = client.execute(httpGet);
+                HttpEntity entity = response.getEntity();
+                InputStream stream = entity.getContent();
+                int b;
+                while ((b = stream.read()) != -1) {
+                    stringBuilder.append((char) b);
+                }
+            } catch (ClientProtocolException e) {
+            } catch (IOException e) {
+            }
+
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject = new JSONObject(stringBuilder.toString());
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            return jsonObject;
+        }
+
+        public double[] getGeoPoint(JSONObject jsonObject) {
+
+            double lon = new Double(0);
+            double lat = new Double(0);
+
+            try {
+
+                lon = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
+                        .getJSONObject("geometry").getJSONObject("location")
+                        .getDouble("lng");
+
+                lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
+                        .getJSONObject("geometry").getJSONObject("location")
+                        .getDouble("lat");
+
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            destinationAddress = new double[]{lat,lon };
+            return destinationAddress;
+
+        }
+
+
+        @Override
+        protected double[] doInBackground(String... params) {
+            return getGeoPoint(getLocationInfo(params[0].replace("\n", " ").replace(" ", "%20")));
+        }
+
+    }
 }
+
+
+
