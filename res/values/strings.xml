@@ -9,7 +9,7 @@
     <string name="main_rb_input_address">От адресса:</string>
     <string name="main_screen_radius">Укажите радиус поиска сервиса в км</string>
     <string name="main_screen_search_button">Найти!</string>
-
+    <string name="main_screen_autocompletetext_hint">Введите адресс</string>
     <string name="sto">СТО</string>
     <string name="gas_station">Заправка</string>
     <string name="auto_show">Автосалон</string>
@@ -23,6 +23,15 @@
         <item>@string/auto_show</item>
         <item>@string/tire_service</item>
         <item>@string/car_wash</item>
+    </string-array>
+
+    <string-array name="item_info_array_headers">
+        <item>Название</item>
+        <item>Тип</item>
+        <item>Краткое описание</item>
+        <item>Адрес</item>
+        <item>Телефон</item>
+
     </string-array>
 
     <string name="layers_demo">Layers</string>

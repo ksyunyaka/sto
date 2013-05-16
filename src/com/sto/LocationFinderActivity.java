@@ -14,7 +14,6 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sto.db.DBController;
@@ -40,6 +39,7 @@ public class LocationFinderActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.basic_demo);
+        //requestTransparentRegion();
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -76,8 +76,10 @@ public class LocationFinderActivity extends FragmentActivity {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
+//            SupportMapFragment mapFragment;
+//            mMap = SupportMapFragment.newInstance(new GoogleMapOptions().zOrderOnTop(true));
+//            mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);//.getMap();
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
@@ -98,7 +100,7 @@ public class LocationFinderActivity extends FragmentActivity {
             MarkerOptions mo = new MarkerOptions();
             mo.position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY()));
             mo.title(entity.getTitle());
-            mo.icon(BitmapDescriptorFactory.fromResource(R.drawable.azs));
+//            mo.icon(BitmapDescriptorFactory.fromResource(R.drawable.azs));
             mMap.addMarker(mo);
         }
         LatLng coordinate;

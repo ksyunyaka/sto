@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import com.google.android.maps.GeoPoint;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,13 +22,15 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 
+//import com.google.android.maps.GeoPoint;
+
 
 public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
     /**
      * Called when the activity is first created.
      */
     boolean isMyLocation = true;
-    double [] destinationAddress;
+    double[] destinationAddress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,9 +101,13 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
     private void start() {
 //        int[] addr = {destinationAddress.getLatitudeE6(), destinationAddress.getLongitudeE6()};
-        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
-        intent.putExtra("isMyLoc", isMyLocation);
-        intent.putExtra("destCoordinates", destinationAddress);
+//        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
+//        intent.putExtra("isMyLoc", isMyLocation);
+//        intent.putExtra("destCoordinates", destinationAddress);
+//        startActivity(intent);
+        Intent intent = new Intent(STOActivity.this, ShowItemDescription.class);
+//        intent.putExtra("isMyLoc", isMyLocation);
+//        intent.putExtra("destCoordinates", destinationAddress);
         startActivity(intent);
     }
 
@@ -189,7 +194,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            destinationAddress = new double[]{lat,lon };
+            destinationAddress = new double[]{lat, lon};
             return destinationAddress;
 
         }
