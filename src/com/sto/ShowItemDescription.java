@@ -43,25 +43,25 @@ public class ShowItemDescription extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_item);
 
-        colors[0] = Color.parseColor("#559966CC");
-        colors[1] = Color.parseColor("#55336699");
+        colors[0] = Color.parseColor("#A69D86");
+        colors[1] = Color.parseColor("#8FC350");
 
-        LinearLayout linLayout = (LinearLayout) findViewById(R.id.linLayout);
+        LinearLayout descrLayout = (LinearLayout) findViewById(R.id.descrLayout);
 
-        LayoutInflater ltInflater = getLayoutInflater();
+        LayoutInflater descrInflater = getLayoutInflater();
 
         for (int i = 0; i < name.length; i++) {
             Log.d("myLogs", "i = " + i);
-            View item = ltInflater.inflate(R.layout.item, linLayout, false);
-            TextView tvName = (TextView) item.findViewById(R.id.tvName);
+            View item = descrInflater.inflate(R.layout.item, descrLayout, false);
+            TextView tvName = (TextView) item.findViewById(R.id.serviceName);
             tvName.setText(name[i]);
-            TextView tvPosition = (TextView) item.findViewById(R.id.tvPosition);
+            TextView tvPosition = (TextView) item.findViewById(R.id.shortDescr);
             tvPosition.setText("Должность: " + position[i]);
-            TextView tvSalary = (TextView) item.findViewById(R.id.tvSalary);
+            TextView tvSalary = (TextView) item.findViewById(R.id.telDescr);
             tvSalary.setText("Оклад: " + String.valueOf(salary[i]));
             item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
             item.setBackgroundColor(colors[i % 2]);
-            linLayout.addView(item);
+            descrLayout.addView(item);
         }
     }
 }
