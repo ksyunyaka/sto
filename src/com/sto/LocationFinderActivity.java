@@ -14,10 +14,13 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sto.db.DBController;
 import com.sto.entity.STO;
+import com.sto.utils.StoCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,18 +93,16 @@ public class LocationFinderActivity extends FragmentActivity {
     private void setUpMap() {
         Location location = getLocation(LocationManager.GPS_PROVIDER);
 
-        DBController dbController = new DBController(this, getResources().openRawResource(R.raw.insert_statements));
-        dbController.open();
+        List<STO> allSTOEntities = StoCache.INSTANCE.getAllSTOEntities();
+//        StoCache.INSTANCE.getStoByTitle("title").getDescription()
 
-
-        List<STO> allSTOEntities = dbController.getAllSTOEntities();
-        List<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
         for (STO entity : allSTOEntities) {
             MarkerOptions mo = new MarkerOptions();
             mo.position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY()));
             mo.title(entity.getTitle());
-//            mo.icon(BitmapDescriptorFactory.fromResource(R.drawable.azs));
-            mMap.addMarker(mo);
+            mo.icon(BitmapDescriptorFactory.fromResource(R.drawable.azs));
+            Marker marker = mMap.addMarker(mo);
+            StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
         }
         LatLng coordinate;
         if (isMyLock) {
@@ -112,6 +113,13 @@ public class LocationFinderActivity extends FragmentActivity {
         mMap.addMarker(new MarkerOptions().position(coordinate).title("Me"));
 
         CameraUpdate center = CameraUpdateFactory.newLatLng(coordinate);
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                STO sto = StoCache.INSTANCE.getStoByMarkerId(marker.getId());
+
+            }
+        });
         mMap.moveCamera(center);
         mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
     }

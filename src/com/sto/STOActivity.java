@@ -9,6 +9,7 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
+import com.sto.utils.StoCache;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -35,6 +36,8 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StoCache.INSTANCE.initialize(this, getResources().openRawResource(R.raw.insert_statements));
         setContentView(R.layout.main);
 
         Spinner spinner = (Spinner) findViewById(R.id.layers_spinner);
@@ -83,13 +86,6 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             }
         });
 
-//        //test of db
-//        DBController dbController;
-//        //is it ok to transfer inputStream?
-//        dbController = new DBController(this, getResources().openRawResource(R.raw.insert_statements));
-//        dbController.open();
-//
-
     }
 
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -100,15 +96,14 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     }
 
     private void start() {
-//        int[] addr = {destinationAddress.getLatitudeE6(), destinationAddress.getLongitudeE6()};
-//        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
+        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
+        intent.putExtra("isMyLoc", isMyLocation);
+        intent.putExtra("destCoordinates", destinationAddress);
+        startActivity(intent);
+//        Intent intent = new Intent(STOActivity.this, ShowItemDescription.class);
 //        intent.putExtra("isMyLoc", isMyLocation);
 //        intent.putExtra("destCoordinates", destinationAddress);
 //        startActivity(intent);
-        Intent intent = new Intent(STOActivity.this, ShowItemDescription.class);
-//        intent.putExtra("isMyLoc", isMyLocation);
-//        intent.putExtra("destCoordinates", destinationAddress);
-        startActivity(intent);
     }
 
     @Override
