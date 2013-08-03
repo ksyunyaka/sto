@@ -2,6 +2,7 @@ package com.sto.utils;
 
 import android.content.Context;
 import com.sto.db.DBController;
+import com.sto.entity.Category;
 import com.sto.entity.STO;
 
 import java.io.InputStream;
@@ -21,9 +22,9 @@ public enum StoCache {
     private static List<STO> allSTOEntities = new ArrayList<STO>();
     private static HashMap<String, STO> stoByMarkerId = new HashMap<String, STO>();
     private static HashMap<String, STO> stoByTitle = new HashMap<String, STO>();
+    private static HashMap<String, List<STO>> stoByCategory = new HashMap<String, List<STO>>();
 
     private static boolean isInitialized = false;
-
 
     public void initialize(Context context, InputStream insertStatementStream) {
         if (!isInitialized) {
@@ -34,8 +35,17 @@ public enum StoCache {
 
             for (STO sto : allSTOEntities) {
                 stoByTitle.put(sto.getTitle(), sto);
+                cacheSTOEntitiesByCategory(sto);
+
             }
             isInitialized = true;
+        }
+    }
+
+    private void cacheSTOEntitiesByCategory(STO sto) {
+        List<Category> categoryList = sto.getCategory();
+        for( Category category: categoryList){
+            MapUtils.addToMap(stoByCategory, category.getName(), sto);
         }
     }
 
@@ -55,5 +65,7 @@ public enum StoCache {
         stoByMarkerId.put(markerId, sto);
     }
 
-
+    public List<STO> getStoByCategory(String categoryName) {
+        return stoByCategory.get(categoryName);
+    }
 }

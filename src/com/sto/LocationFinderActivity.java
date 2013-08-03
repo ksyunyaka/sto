@@ -17,9 +17,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sto.entity.Category;
 import com.sto.entity.STO;
 import com.sto.utils.StoCache;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +36,7 @@ public class LocationFinderActivity extends FragmentActivity {
     private LocationManager mlocManager;
     private boolean isMyLocation;
     private double[] destCoordinates;
+    private String [] categories;
 
     boolean gpsEnabled;
     boolean networkEnabled;
@@ -55,6 +58,8 @@ public class LocationFinderActivity extends FragmentActivity {
         Bundle extras = getIntent().getExtras();
         isMyLocation = extras.getBoolean("isMyLoc");
         destCoordinates = extras.getDoubleArray("destCoordinates");
+        categories = extras.getStringArray("categories");
+
 
         setUpMapIfNeeded();
     }
@@ -75,10 +80,6 @@ public class LocationFinderActivity extends FragmentActivity {
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-//            SupportMapFragment mapFragment;
-//            mMap = SupportMapFragment.newInstance(new GoogleMapOptions().zOrderOnTop(true));
-//            mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);//.getMap();
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (mMap != null) {
                 setUpMap();
@@ -89,15 +90,26 @@ public class LocationFinderActivity extends FragmentActivity {
     private void setUpMap() {
         Location location = getLocation();
 
-        List<STO> allSTOEntities = StoCache.INSTANCE.getAllSTOEntities();
-        for (STO entity : allSTOEntities) {
+        List<STO> stoEntitiesToDisplay;
+        if(categories.length == 0){
+            stoEntitiesToDisplay = StoCache.INSTANCE.getAllSTOEntities();
+        }else{
+            stoEntitiesToDisplay = new ArrayList<>();
+            for( String categoryName: categories){
+                //todo if 1 item is in 2 categories which was selected - USE SET
+                stoEntitiesToDisplay.addAll(StoCache.INSTANCE.getStoByCategory(categoryName));
+            }
+        }
+
+        for (STO entity : stoEntitiesToDisplay) {
             MarkerOptions mo = new MarkerOptions();
             mo.position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY()));
             mo.title(entity.getTitle());
-            mo.icon(BitmapDescriptorFactory.fromResource(R.drawable.azs));
+            mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
             Marker marker = mMap.addMarker(mo);
             StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
         }
+         //todo default place
         LatLng coordinate;
         if (isMyLocation) {
             coordinate = new LatLng(location.getLatitude(), location.getLongitude());

@@ -9,6 +9,7 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
+import com.sto.entity.Category;
 import com.sto.utils.StoCache;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,6 +23,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 //import com.google.android.maps.GeoPoint;
 
@@ -32,6 +35,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
      */
     boolean isMyLocation = true;
     double[] destinationAddress;
+    List<String> categoriesToDisplay = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,12 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         setContentView(R.layout.main);
 
         Spinner spinner = (Spinner) findViewById(R.id.layers_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.layers_array,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Category.getCategoriesName());
+        //todo maybe dropdown with checkboxes
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
 
         spinner.setOnItemSelectedListener(this);
 
@@ -54,6 +59,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         sb.setProgress(5);
         sb.setOnSeekBarChangeListener(this);
 
+        //todo remove this
         final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         View.OnClickListener listener = new View.OnClickListener() {
 
@@ -88,10 +94,12 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
     }
 
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
 
-        new GeoCode().execute(str);
+        AsyncTask<String, Void, double[]> execute = new GeoCode().execute(str);
+
 
     }
 
@@ -99,11 +107,9 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
         intent.putExtra("isMyLoc", isMyLocation);
         intent.putExtra("destCoordinates", destinationAddress);
+        intent.putExtra("categories", categoriesToDisplay.toArray(new String[0]));
         startActivity(intent);
-//        Intent intent = new Intent(STOActivity.this, ShowItemDescription.class);
-//        intent.putExtra("isMyLoc", isMyLocation);
-//        intent.putExtra("destCoordinates", destinationAddress);
-//        startActivity(intent);
+
     }
 
     @Override
@@ -113,6 +119,8 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String label = parent.getItemAtPosition(position).toString();
+        categoriesToDisplay.add(label);
     }
 
     @Override

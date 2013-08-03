@@ -5,14 +5,14 @@
           android:versionName="1.0">
 
     <permission
-            android:name="com.example.mapdemo.permission.MAPS_RECEIVE"
+            android:name="com.sto.permission.MAPS_RECEIVE"
             android:protectionLevel="signature"/>
 
-    <uses-permission android:name="com.example.mapdemo.permission.MAPS_RECEIVE"/>
+    <uses-permission android:name="com.sto.permission.MAPS_RECEIVE"/>
 
     <uses-sdk
-            android:minSdkVersion="15"
-            android:targetSdkVersion="15"/>
+            android:minSdkVersion="10"
+            android:targetSdkVersion="17"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
@@ -30,11 +30,14 @@
             android:hardwareAccelerated="true"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name">
-        <uses-library android:name="com.google.android.maps"/>
 
+
+        <!--<meta-data
+                android:name="com.google.android.maps.v2.API_KEY"
+                android:value="AIzaSyBKCP3E40Ow86bjAYNByGiyy3bM9716PiY"/>-->
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
-                android:value="AIzaSyBKCP3E40Ow86bjAYNByGiyy3bM9716PiY"/>
+                android:value="AIzaSyB0SMKpblw3BFrHJZIueYjhjtd2kog6utw"/>
 
         <activity
                 android:name="STOActivity"

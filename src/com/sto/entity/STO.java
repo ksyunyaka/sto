@@ -20,7 +20,7 @@ public class STO {
     private String xFields;
     private String title;
     private String description;
-    private List<STOCategory> category;
+    private List<Category> category;
     private float coordinateX;
     private float coordinateY;
 
@@ -95,11 +95,11 @@ public class STO {
         this.description = description;
     }
 
-    public List<STOCategory> getCategory() {
+    public List<Category> getCategory() {
         return category;
     }
 
-    public void setCategory(List<STOCategory> category) {
+    public void setCategory(List<Category> category) {
         this.category = category;
     }
 

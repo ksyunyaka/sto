@@ -1,6 +1,6 @@
 package com.sto.utils;
 
-import com.sto.entity.STOCategory;
+import com.sto.entity.Category;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,11 @@ public class StoUtils {
         return result;
     }
 
-    public static List<STOCategory> parseCategory(String categoryString) {
-        List<STOCategory> result = new ArrayList<>();
+    public static List<Category> parseCategory(String categoryString) {
+        List<Category> result = new ArrayList<>();
         String[] categories = categoryString.split(",");
         for (String category : categories) {
-            STOCategory stoCategory = STOCategory.getById(Integer.parseInt(category));
+            Category stoCategory = Category.getCategoryById(Integer.parseInt(category));
             if (stoCategory != null) {
                 result.add(stoCategory);
             }
