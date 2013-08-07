@@ -13,16 +13,16 @@ import java.util.List;
 public class STO {
 
     private long id;
-    private String author;
-    private Date date;
     private String shortHistory;
-    private String fullHistory;
-    private String xFields;
+    private String telephone;
+    private float longitude;
+    private float latitude;
+    private String time;
+    private String site;
+    private String washType;
     private String title;
     private String description;
     private List<Category> category;
-    private float coordinateX;
-    private float coordinateY;
 
     public long getId() {
         return id;
@@ -30,22 +30,6 @@ public class STO {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getShortHistory() {
@@ -56,27 +40,52 @@ public class STO {
         this.shortHistory = shortHistory;
     }
 
-    public String getFullHistory() {
-        return fullHistory;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setFullHistory(String fullHistory) {
-        this.fullHistory = fullHistory;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
-    public String getxFields() {
-        return xFields;
+    public float getLongitude() {
+        return longitude;
     }
 
-    public void setxFields(String xFields) {
-        this.xFields = xFields;
-        parseCoordinate(xFields);
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 
-    private void parseCoordinate(String coordinate) {
-        float[] coordinates = StoUtils.parseCoordinates(coordinate);
-        coordinateX = coordinates[0];
-        coordinateY = coordinates[1];
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public String getWashType() {
+        return washType;
+    }
+
+    public void setWashType(String washType) {
+        this.washType = washType;
     }
 
     public String getTitle() {
@@ -101,13 +110,5 @@ public class STO {
 
     public void setCategory(List<Category> category) {
         this.category = category;
-    }
-
-    public float getCoordinateX() {
-        return coordinateX;
-    }
-
-    public float getCoordinateY() {
-        return coordinateY;
     }
 }

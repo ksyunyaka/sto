@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.sto.db.DBAdapter.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: egor
@@ -30,8 +32,8 @@ public class DBController {
     private SQLiteDatabase database;
     private DBAdapter dbAdapter;
 
-    private String[] allColumns = {DBAdapter.COLUMN_ID, DBAdapter.COLUMN_AUTHOR, DBAdapter.COLUMN_DATE, DBAdapter.COLUMN_SHORT_HISTORY,
-            DBAdapter.COLUMN_FULL_HISTORY, DBAdapter.COLUMN_XFIELDS, DBAdapter.COLUMN_TITLE, DBAdapter.COLUMN_DESCRIPTION, DBAdapter.COLUMN_CATEGORY};
+    private String[] allColumns = {COLUMN_ID, COLUMN_SHORT_HISTORY, COLUMN_TELEPHONE, COLUMN_LONGITUDE, COLUMN_LATITUDE,
+            COLUMN_TIME, COLUMN_SITE, COLUMN_WASH_TYPE, COLUMN_TITLE, COLUMN_DESCRIPTION, COLUMN_CATEGORY};
 
     public DBController(Context context, InputStream insertStatementStream) {
         dbAdapter = new DBAdapter(context, insertStatementStream);
@@ -54,28 +56,6 @@ public class DBController {
         }
     }
 
-    //it will be good if we won't create new entity.
-    public STO createSTO(String author) {
-        ContentValues values = new ContentValues();
-        values.put(DBAdapter.COLUMN_AUTHOR, author);
-        long insertId = database.insert(DBAdapter.TABLE_NAME_STO, null,
-                values);
-        Cursor cursor = database.query(DBAdapter.TABLE_NAME_STO,
-                allColumns, DBAdapter.COLUMN_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        STO newEntity = cursorToSTO(cursor);
-        cursor.close();
-        return newEntity;
-    }
-
-    public void deleteSTOEtity(STO entity) {
-        long id = entity.getId();
-        System.out.println("STO deleted with id: " + id);
-        database.delete(DBAdapter.TABLE_NAME_STO, DBAdapter.COLUMN_ID
-                + " = " + id, null);
-    }
-
     public List<STO> getAllSTOEntities() {
         List<STO> entityList = new ArrayList<STO>();
 
@@ -96,23 +76,22 @@ public class DBController {
     private STO cursorToSTO(Cursor cursor) {
         STO entity = new STO();
         entity.setId(cursor.getLong(0));
-        entity.setAuthor(cursor.getString(1));
-        String dateStr = cursor.getString(2);
-        Date date = null;
-        if (!dateStr.equals("0000-00-00 00:00:00")) {
-            try {
-                date = dateFormat.parse(dateStr);
-            } catch (ParseException e) {
-                //nothing to do here))
-            }
+        entity.setShortHistory(cursor.getString(1));
+        entity.setTelephone(cursor.getString(2));
+        String longtitude = cursor.getString(3);
+        if(longtitude.length()>0){
+            entity.setLongitude(Float.parseFloat(longtitude));
         }
-        entity.setDate(date);
-        entity.setShortHistory(cursor.getString(3));
-        entity.setFullHistory(cursor.getString(4));
-        entity.setxFields(cursor.getString(5));
-        entity.setTitle(cursor.getString(6));
-        entity.setDescription(cursor.getString(7));
-        entity.setCategory(StoUtils.parseCategory(cursor.getString(8)));
+        String latitude = cursor.getString(4);
+        if( latitude.length()>0){
+            entity.setLatitude(Float.parseFloat(latitude));
+        }
+        entity.setTime(cursor.getString(5));
+        entity.setSite(cursor.getString(6));
+        entity.setWashType(cursor.getString(7));
+        entity.setTitle(cursor.getString(8));
+        entity.setDescription(cursor.getString(9));
+        entity.setCategory(StoUtils.parseCategory(cursor.getString(10)));
         return entity;
     }
 

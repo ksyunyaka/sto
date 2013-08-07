@@ -64,7 +64,7 @@ public class ShowItems extends ListActivity
         List<STO> allSTOEntities = StoCache.INSTANCE.getAllSTOEntities();
         List<MarkerOptions> markerOptionsList = new ArrayList<MarkerOptions>();
         for( STO entity: allSTOEntities){
-            markerOptionsList.add(new MarkerOptions().position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY())).title(entity.getTitle()));
+            markerOptionsList.add(new MarkerOptions().position(new LatLng(entity.getLatitude(), entity.getLongitude())).title(entity.getTitle()));
 
         }
 

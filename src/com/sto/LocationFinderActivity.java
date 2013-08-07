@@ -103,7 +103,7 @@ public class LocationFinderActivity extends FragmentActivity {
 
         for (STO entity : stoEntitiesToDisplay) {
             MarkerOptions mo = new MarkerOptions();
-            mo.position(new LatLng(entity.getCoordinateX(), entity.getCoordinateY()));
+            mo.position(new LatLng(entity.getLatitude(), entity.getLongitude()));
             mo.title(entity.getTitle());
             mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
             Marker marker = mMap.addMarker(mo);

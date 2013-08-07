@@ -26,8 +26,7 @@ public enum StoCache {
 
     private static boolean isInitialized = false;
 
-    public void initialize(Context context, InputStream insertStatementStream) {
-        if (!isInitialized) {
+    public void initialize(Context context, InputStream insertStatementStream) {        if (!isInitialized) {
             DBController dbController = new DBController(context, insertStatementStream);
             dbController.open();
 
