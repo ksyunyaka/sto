@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,7 +18,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sto.entity.Category;
+import com.sto.adapters.STOInfoWindowAdapter;
 import com.sto.entity.STO;
 import com.sto.utils.StoCache;
 
@@ -36,7 +37,7 @@ public class LocationFinderActivity extends FragmentActivity {
     private LocationManager mlocManager;
     private boolean isMyLocation;
     private double[] destCoordinates;
-    private String [] categories;
+    private String category;
 
     boolean gpsEnabled;
     boolean networkEnabled;
@@ -58,8 +59,7 @@ public class LocationFinderActivity extends FragmentActivity {
         Bundle extras = getIntent().getExtras();
         isMyLocation = extras.getBoolean("isMyLoc");
         destCoordinates = extras.getDoubleArray("destCoordinates");
-        categories = extras.getStringArray("categories");
-
+        category = extras.getString("category");
 
         setUpMapIfNeeded();
     }
@@ -82,23 +82,19 @@ public class LocationFinderActivity extends FragmentActivity {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (mMap != null) {
+                mMap.clear();
                 setUpMap();
             }
         }
     }
 
     private void setUpMap() {
-        Location location = getLocation();
-
         List<STO> stoEntitiesToDisplay;
-        if(categories.length == 0){
+        if (category == null) {
             stoEntitiesToDisplay = StoCache.INSTANCE.getAllSTOEntities();
-        }else{
+        } else {
             stoEntitiesToDisplay = new ArrayList<>();
-            for( String categoryName: categories){
-                //todo if 1 item is in 2 categories which was selected - USE SET
-                stoEntitiesToDisplay.addAll(StoCache.INSTANCE.getStoByCategory(categoryName));
-            }
+            stoEntitiesToDisplay.addAll(StoCache.INSTANCE.getStoByCategory(category));
         }
 
         for (STO entity : stoEntitiesToDisplay) {
@@ -109,15 +105,10 @@ public class LocationFinderActivity extends FragmentActivity {
             Marker marker = mMap.addMarker(mo);
             StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
         }
-         //todo default place
-        LatLng coordinate;
-        if (isMyLocation) {
-            coordinate = new LatLng(location.getLatitude(), location.getLongitude());
-        } else {
-            coordinate = new LatLng(destCoordinates[0], destCoordinates[1]);
-        }
 
-        myMarker = mMap.addMarker(new MarkerOptions().position(coordinate).title("Me"));
+        LatLng startCoordinate = getStartCoordinate();
+
+        myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -127,13 +118,30 @@ public class LocationFinderActivity extends FragmentActivity {
             }
         });
 
-        CameraUpdate center = CameraUpdateFactory.newLatLng(coordinate);
+        CameraUpdate center = CameraUpdateFactory.newLatLng(startCoordinate);
+        mMap.setInfoWindowAdapter(new STOInfoWindowAdapter(getLayoutInflater()));
         mMap.moveCamera(center);
         mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
     }
 
+    private LatLng getStartCoordinate() {
+        LatLng coordinate;
+        try {
+            if (isMyLocation) {
+                Location location = getCurrentGpsLocation();
+                coordinate = new LatLng(location.getLatitude(), location.getLongitude());
+            } else {
+                coordinate = new LatLng(destCoordinates[0], destCoordinates[1]);
+            }
+        } catch (Exception e) {
+            Log.e("ESTEO", "Couldn't get coordinates: " + e.getMessage());
+            coordinate = new LatLng(50.450070, 30.523268);
+        }
+        return coordinate;
+    }
 
-    public Location getLocation() {
+
+    public Location getCurrentGpsLocation() {
         Location location = null;
         if (gpsEnabled) {
             mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
@@ -142,10 +150,6 @@ public class LocationFinderActivity extends FragmentActivity {
         if (networkEnabled && location == null) {
             mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
             location = mlocManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
-        if (location == null) {
-            //todo just for test: should build new alertMessage:couldn't find location
-            buildAlertMessageNoGps();
         }
         return location;
     }

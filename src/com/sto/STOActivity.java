@@ -30,12 +30,10 @@ import java.util.List;
 
 
 public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
-    /**
-     * Called when the activity is first created.
-     */
+
     boolean isMyLocation = true;
     double[] destinationAddress;
-    List<String> categoriesToDisplay = new ArrayList<>();
+    String categoryToDisplay;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +46,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Category.getCategoriesName());
-        //todo maybe dropdown with checkboxes
+
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
 
@@ -59,7 +57,6 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         sb.setProgress(5);
         sb.setOnSeekBarChangeListener(this);
 
-        //todo remove this
         final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         View.OnClickListener listener = new View.OnClickListener() {
 
@@ -67,16 +64,13 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.gps_rb:
-                        Toast.makeText(getApplicationContext(), "Button 1 pressed", Toast.LENGTH_SHORT).show();
                         autoCompView.setEnabled(false);
                         break;
                     case R.id.address_rb:
-                        Toast.makeText(getApplicationContext(), "Button 2 pressed", Toast.LENGTH_SHORT).show();
                         autoCompView.setEnabled(true);
                         isMyLocation = false;
                         break;
                 }
-
             }
         };
 
@@ -91,13 +85,12 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
                 start();
             }
         });
-
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
-
+        //todo
         AsyncTask<String, Void, double[]> execute = new GeoCode().execute(str);
 
 
@@ -107,7 +100,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
         intent.putExtra("isMyLoc", isMyLocation);
         intent.putExtra("destCoordinates", destinationAddress);
-        intent.putExtra("categories", categoriesToDisplay.toArray(new String[0]));
+        intent.putExtra("category", categoryToDisplay);
         startActivity(intent);
 
     }
@@ -120,7 +113,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String label = parent.getItemAtPosition(position).toString();
-        categoriesToDisplay.add(label);
+        categoryToDisplay=label;
     }
 
     @Override
