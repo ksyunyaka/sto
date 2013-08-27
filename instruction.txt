@@ -1,0 +1,12 @@
+###insert_statements.sql
+
+to achieve this script you should run on your database this:
+
+select concat('insert into `sto_post` (`id`, `short_story`, `telephone`, `longitude`, `latitude`, `time`, `site`, `wash_type`, `title`, `descr`, `category` ) VALUES
+	(', `id`, ', \'', `short_story`, '\', \'', `xfields`, '\', \'', `title`, '\', \'', `descr`, '\', \'', category, '\' );')
+from sto_post
+where xfields like '%crd1%'
+
+replace all characters such \' and \" with ''
+also change replace all __NEWL__ with <br>
+####

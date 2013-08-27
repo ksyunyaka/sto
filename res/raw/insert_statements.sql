@@ -1,16 +1,3 @@
-/*
-to achieve this script you should run on your database this:
-
-select
-	concat('insert into `sto_post` (`id`, `short_story`, `telephone`, `longitude`, `latitude`, `time`, `site`, `wash_type`, `title`, `descr`, `category` ) VALUES
-	(', `id`, ', \'', `short_story`, '\', \'', `xfields`, '\', \'', `title`, '\', \'', `descr`, '\', \'', category, '\' );')
-from sto_post
-where xfields like '%crd1%'
-
-replace all characters such \' or \" with ''
-
-*/
-
 insert into `sto_post` (`id`, `short_story`, `telephone`, `longitude`, `latitude`, `time`, `site`, `wash_type`, `title`, `descr`, `category` ) VALUES
 	(139, 'г. Киев, ул. Генерала Наумова, 36', 'crd1|30.356563||crd2|50.473754', 'БАРС', 'г. Киев, ул. Генерала Наумова, 36', '12,40,41' );
 insert into `sto_post` (`id`, `short_story`, `telephone`, `longitude`, `latitude`, `time`, `site`, `wash_type`, `title`, `descr`, `category` ) VALUES 

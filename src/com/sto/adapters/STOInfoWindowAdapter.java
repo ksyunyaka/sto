@@ -60,13 +60,6 @@ public class STOInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             site.setClickable(true);
             site.setMovementMethod(LinkMovementMethod.getInstance());
             site.setText(Html.fromHtml("<a href='" + stoByMarkerId.getSite() + "'>" + stoByMarkerId.getSite() + "</a>"));
-            site.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(null, "clicked", Toast.LENGTH_LONG).show();
-
-                }
-            });
         }
         if (!stoByMarkerId.getWashType().equals("")) {
             TextView washType = (TextView) infoWindow.findViewById(R.id.wash);
