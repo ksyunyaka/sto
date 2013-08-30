@@ -13,10 +13,10 @@
 
 
     <!--InfoWindow-->
-    <string name="info_window_telephone">Телефон: </string>
-    <string name="info_window_site">Сайт: </string>
-    <string name="info_window_address">Адресс: </string>
-    <string name="info_window_time">Время работы: </string>
-    <string name="info_window_wash_type">Тип мойки: </string>
+    <string name="info_window_telephone">Телефон:</string>
+    <string name="info_window_site">Сайт:</string>
+    <string name="info_window_address">Адресс:</string>
+    <string name="info_window_time">Время работы:</string>
+    <string name="info_window_wash_type">Тип мойки:</string>
 
 </resources>

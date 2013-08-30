@@ -18,8 +18,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.sto.adapters.STOInfoWindowAdapter;
 import com.sto.entity.STO;
+import com.sto.listeners.InfoClickListener;
 import com.sto.utils.StoCache;
 
 import java.util.ArrayList;
@@ -110,16 +110,9 @@ public class LocationFinderActivity extends FragmentActivity {
 
         myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
 
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                STO sto = StoCache.INSTANCE.getStoByMarkerId(marker.getId());
-
-            }
-        });
+        mMap.setOnInfoWindowClickListener(new InfoClickListener(this));
 
         CameraUpdate center = CameraUpdateFactory.newLatLng(startCoordinate);
-        mMap.setInfoWindowAdapter(new STOInfoWindowAdapter(getLayoutInflater()));
         mMap.moveCamera(center);
         mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
     }
