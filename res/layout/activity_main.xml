@@ -91,7 +91,7 @@
                 android:paddingTop="10dip"
                 android:gravity="center"
                 android:textColor="#a4da65"
-                android:text="7 km"
+                android:text="max"
                 android:textSize="16sp"
                 android:id="@+id/seekBarStatus"/>
 

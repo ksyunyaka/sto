@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -14,16 +14,17 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import com.sto.entity.STO;
+import com.sto.listeners.ChangeLocationListener;
 import com.sto.listeners.InfoClickListener;
+import com.sto.route.DownloadTask;
 import com.sto.utils.StoCache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,11 +33,13 @@ import java.util.List;
  */
 public class MapActivity extends FragmentActivity {
 
+    private static final long REFRESH_FREQUENCY = TimeUnit.MINUTES.toMillis(1);
+
+
     private GoogleMap mMap;
-    private LocationListener mlocListener = new MyLocationListener();
-    private LocationManager mlocManager;
+    ChangeLocationListener locationListener;
     private boolean isMyLocation;
-    private double[] destCoordinates;
+    private double[] startAddress;
     private String category;
     private int radius;
 
@@ -44,39 +47,65 @@ public class MapActivity extends FragmentActivity {
     boolean networkEnabled;
 
     private Marker myMarker;
+    private Polyline route;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        networkEnabled = mlocManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if (!gpsEnabled && !networkEnabled) {
-            buildAlertMessageNoGps();
-        }
-
         Bundle extras = getIntent().getExtras();
         isMyLocation = extras.getBoolean(MainActivity.IS_MY_LOC);
-        destCoordinates = extras.getDoubleArray(MainActivity.DEST_COORDINATES);
+        startAddress = extras.getDoubleArray(MainActivity.START_ADDRESS);
         category = extras.getString(MainActivity.CATEGORY);
-        radius = extras.getInt(MainActivity.RADIUS)*1000;
+        radius = extras.getInt(MainActivity.RADIUS) * 1000;
 
+        checkLocationProviderSettings();
         setUpMapIfNeeded();
+        addLocationListener();
+        mMap.setOnInfoWindowClickListener(new InfoClickListener(this, isMyLocation));
+    }
+
+    private void addLocationListener() {
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (locationListener != null) {
+                locationManager.removeUpdates(locationListener);
+            }
+            locationListener = new ChangeLocationListener(myMarker, mMap);
+            if (gpsEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, REFRESH_FREQUENCY, 0, locationListener);
+            } else if (networkEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, REFRESH_FREQUENCY, 0, locationListener);
+            }
+        } catch (Exception e) {
+            Log.e("ESTEO", "Can't set location updates listener", e);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMapIfNeeded();
+        checkLocationProviderSettings();
+        addLocationListener();
+        if(isMyLocation){
+            locationListener.setRoute(null);
+        }
+    }
+
+    private void checkLocationProviderSettings() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!gpsEnabled && !networkEnabled) {
+            buildAlertMessageNoGps();
+        }
     }
 
     @Override
-
     protected void onStart() {
         super.onStart();
-
     }
 
 
@@ -103,36 +132,44 @@ public class MapActivity extends FragmentActivity {
         myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
 
         for (STO entity : stoEntitiesToDisplay) {
-            if (radius != -1) {
-                float[] result = new float[3];
-                Location.distanceBetween(startCoordinate.latitude, startCoordinate.longitude, entity.getLatitude(), entity.getLongitude(), result);
-                if (radius >= result[0]) {
-                    MarkerOptions mo = new MarkerOptions();
-                    mo.position(new LatLng(entity.getLatitude(), entity.getLongitude()));
-                    mo.title(entity.getTitle());
-                    mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
-                    Marker marker = mMap.addMarker(mo);
-                    StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
-                }
+            if (isEntityInRadius(entity, startCoordinate)) {
+                MarkerOptions mo = new MarkerOptions();
+                mo.position(new LatLng(entity.getLatitude(), entity.getLongitude()));
+                mo.title(entity.getTitle());
+                mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
+                Marker marker = mMap.addMarker(mo);
+                StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
             }
         }
-
-
-        mMap.setOnInfoWindowClickListener(new InfoClickListener(this));
 
         CameraUpdate center = CameraUpdateFactory.newLatLng(startCoordinate);
         mMap.moveCamera(center);
         mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
     }
 
+    private boolean isEntityInRadius(STO entity, LatLng startCoordinate) {
+        if (radius > 0) {
+            float[] result = new float[3];
+            Location.distanceBetween(startCoordinate.latitude, startCoordinate.longitude, entity.getLatitude(), entity.getLongitude(), result);
+            float distance = result[0];
+            if (distance <= radius) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
     private LatLng getStartCoordinate() {
         LatLng coordinate;
         try {
             if (isMyLocation) {
-                Location location = getCurrentGpsLocation();
+                Location location = getCurrentLocation();
                 coordinate = new LatLng(location.getLatitude(), location.getLongitude());
             } else {
-                coordinate = new LatLng(destCoordinates[0], destCoordinates[1]);
+                coordinate = new LatLng(startAddress[0], startAddress[1]);
             }
         } catch (Exception e) {
             Log.e("ESTEO", "Couldn't get coordinates: " + e.getMessage());
@@ -143,15 +180,14 @@ public class MapActivity extends FragmentActivity {
     }
 
 
-    public Location getCurrentGpsLocation() {
+    public Location getCurrentLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         if (gpsEnabled) {
-            mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-            location = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
         if (networkEnabled && location == null) {
-            mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
-            location = mlocManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
         return location;
     }
@@ -175,30 +211,20 @@ public class MapActivity extends FragmentActivity {
         alert.show();
     }
 
-
-    public class MyLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location loc) {
-//TODO delete old position of me or maybe add listener to the marker
-//            LatLng coordinate = new LatLng(loc.getLatitude(), loc.getLongitude());
-//            myMarker.remove();
-//            new MarkerOptions().position(coordinate).title("Me");
-//            myMarker = mMap.addMarker(new MarkerOptions().position(coordinate).title("Me"));
+    public void buildRoute(LatLng target) {
+        if (route != null) {
+            route.remove();
         }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        LatLng start = myMarker.getPosition();
+        AsyncTask<LatLng, Void, PolylineOptions> routeTask = new DownloadTask().execute(new LatLng[]{start, target});
+        try {
+            PolylineOptions polylineOptions = routeTask.get();
+            route = mMap.addPolyline(polylineOptions);
+            locationListener.setRoute(route);
+        } catch (Exception e) {
+            Log.e("ESTEO", "can't build route", e);
         }
     }
+
 }
 

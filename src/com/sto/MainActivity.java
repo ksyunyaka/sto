@@ -4,16 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.sto.adapters.PlacesAutoCompleteAdapter;
 import com.sto.entity.Category;
-import com.sto.utils.StoCache;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -30,11 +29,11 @@ import java.io.InputStream;
 public class MainActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
 
     public static final String IS_MY_LOC = "isMyLoc";
-    public static final String DEST_COORDINATES = "destCoordinates";
+    public static final String START_ADDRESS = "startAddress";
     public static final String CATEGORY = "category";
     public static final String RADIUS = "radius";
     boolean isMyLocation = true;
-    double[] destinationAddress;
+    double[] startAddress;
     String categoryToDisplay;
     int radius;
 
@@ -91,16 +90,18 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
-        //todo
-        AsyncTask<String, Void, double[]> execute = new GeoCode().execute(str);
-
-
+        try {
+            startAddress = new GeoCode().execute(str).get();
+        } catch (Exception e) {
+            Log.e("ESTEO", "Can't retrive start address");
+            startAddress = new double[]{50.450070, 30.523268};
+        }
     }
 
     private void start() {
         Intent intent = new Intent(MainActivity.this, MapActivity.class);
         intent.putExtra(IS_MY_LOC, isMyLocation);
-        intent.putExtra(DEST_COORDINATES, destinationAddress);
+        intent.putExtra(START_ADDRESS, startAddress);
         intent.putExtra(CATEGORY, categoryToDisplay);
         intent.putExtra(RADIUS, radius);
         startActivity(intent);
@@ -115,7 +116,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String label = parent.getItemAtPosition(position).toString();
-        categoryToDisplay=label;
+        categoryToDisplay = label;
     }
 
     @Override
@@ -145,6 +146,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
     }
 
     private class GeoCode extends AsyncTask<String, Void, double[]> {
+
         public JSONObject getLocationInfo(String address) {
 
             HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?address=" + address + "&ka&sensor=false");
@@ -160,43 +162,37 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
                 while ((b = stream.read()) != -1) {
                     stringBuilder.append((char) b);
                 }
-            } catch (ClientProtocolException e) {
             } catch (IOException e) {
+                Log.e("ESTEO", "couldn't parse response for geo coding information", e);
             }
 
-            JSONObject jsonObject = new JSONObject();
+            JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(stringBuilder.toString());
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e("ESTEO", "couldn't get geo code information", e);
+                throw new RuntimeException();
             }
 
             return jsonObject;
         }
 
         public double[] getGeoPoint(JSONObject jsonObject) {
-
-            double lon = new Double(0);
-            double lat = new Double(0);
-
+            double lon;
+            double lat;
             try {
 
-                lon = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
-                        .getJSONObject("geometry").getJSONObject("location")
+                lon = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry").getJSONObject("location")
                         .getDouble("lng");
 
-                lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0)
-                        .getJSONObject("geometry").getJSONObject("location")
+                lat = ((JSONArray) jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry").getJSONObject("location")
                         .getDouble("lat");
 
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Log.e("ESTEO", "couldn't parse JSON with geo code information", e);
+                throw new RuntimeException();
             }
-            destinationAddress = new double[]{lat, lon};
-            return destinationAddress;
-
+            return new double[]{lat, lon};
         }
 
 
