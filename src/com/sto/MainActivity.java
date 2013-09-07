@@ -37,6 +37,8 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
     String categoryToDisplay;
     int radius;
 
+    View button;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
         sb.setOnSeekBarChangeListener(this);
 
         final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        button = findViewById(R.id.main_screen_search_Button);
         View.OnClickListener listener = new View.OnClickListener() {
 
             @Override
@@ -65,10 +68,12 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
                 switch (view.getId()) {
                     case R.id.gps_rb:
                         autoCompView.setEnabled(false);
+                        button.setEnabled(true);
                         break;
                     case R.id.address_rb:
                         autoCompView.setEnabled(true);
                         isMyLocation = false;
+                        button.setEnabled(false);
                         break;
                 }
             }
@@ -79,7 +84,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 
         findViewById(R.id.gps_rb).setOnClickListener(listener);
         findViewById(R.id.address_rb).setOnClickListener(listener);
-        findViewById(R.id.main_screen_search_Button).setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 start();
@@ -95,6 +100,8 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
         } catch (Exception e) {
             Log.e("ESTEO", "Can't retrive start address");
             startAddress = new double[]{50.450070, 30.523268};
+        }  finally {
+            button.setEnabled(true);
         }
     }
 
