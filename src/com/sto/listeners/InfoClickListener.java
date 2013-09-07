@@ -29,18 +29,18 @@ public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
 
         AlertDialog.Builder dialogue = new AlertDialog.Builder(parent);
         dialogue.setTitle(marker.getTitle());
-        dialogue.setIcon(R.drawable.ic_launcher);
+        dialogue.setIcon(R.drawable.app_icon);
 
         LinearLayout parentLayout = new LinearLayout(parent);
         parentLayout.setOrientation(LinearLayout.VERTICAL);
 
-        if (!stoByMarkerId.getTelephone().trim().equals("")) {
+        if (!stoByMarkerId.getTelephone().equals("")) {
             TextView telephone = new TextView(parent);
             telephone.setText(parent.getResources().getString(R.string.info_window_telephone) + Html.fromHtml(stoByMarkerId.getTelephone()).toString().replaceAll("\n", ""));
             parentLayout.addView(telephone);
         }
 
-        if (!stoByMarkerId.getTime().trim().equals("")) {
+        if (!stoByMarkerId.getTime().equals("")) {
             TextView time = new TextView(parent);
             time.setText(parent.getResources().getString(R.string.info_window_time) + Html.fromHtml(stoByMarkerId.getTime()).toString().replaceAll("\n", ""));
             parentLayout.addView(time);
@@ -50,7 +50,7 @@ public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
         address.setText(parent.getResources().getString(R.string.info_window_address) + Html.fromHtml(stoByMarkerId.getShortHistory()).toString().replaceAll("\n", ""));
         parentLayout.addView(address);
 
-        if (!stoByMarkerId.getSite().trim().equals("")) {
+        if (!stoByMarkerId.getSite().equals("")) {
             TextView site = new TextView(parent);
             site.setClickable(true);
             SpannableString text = new SpannableString (parent.getResources().getString(R.string.info_window_site) + stoByMarkerId.getSite());

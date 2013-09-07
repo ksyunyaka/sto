@@ -30,7 +30,7 @@ import java.util.List;
  * User: egor
  * Date: 3/2/13
  */
-public class LocationFinderActivity extends FragmentActivity {
+public class MapActivity extends FragmentActivity {
 
     private GoogleMap mMap;
     private LocationListener mlocListener = new MyLocationListener();
@@ -38,6 +38,7 @@ public class LocationFinderActivity extends FragmentActivity {
     private boolean isMyLocation;
     private double[] destCoordinates;
     private String category;
+    private int radius;
 
     boolean gpsEnabled;
     boolean networkEnabled;
@@ -47,7 +48,7 @@ public class LocationFinderActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.basic_demo);
+        setContentView(R.layout.activity_map);
 
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsEnabled = mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -57,9 +58,10 @@ public class LocationFinderActivity extends FragmentActivity {
         }
 
         Bundle extras = getIntent().getExtras();
-        isMyLocation = extras.getBoolean("isMyLoc");
-        destCoordinates = extras.getDoubleArray("destCoordinates");
-        category = extras.getString("category");
+        isMyLocation = extras.getBoolean(MainActivity.IS_MY_LOC);
+        destCoordinates = extras.getDoubleArray(MainActivity.DEST_COORDINATES);
+        category = extras.getString(MainActivity.CATEGORY);
+        radius = extras.getInt(MainActivity.RADIUS)*1000;
 
         setUpMapIfNeeded();
     }
@@ -97,18 +99,24 @@ public class LocationFinderActivity extends FragmentActivity {
             stoEntitiesToDisplay.addAll(StoCache.INSTANCE.getStoByCategory(category));
         }
 
+        LatLng startCoordinate = getStartCoordinate();
+        myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
+
         for (STO entity : stoEntitiesToDisplay) {
-            MarkerOptions mo = new MarkerOptions();
-            mo.position(new LatLng(entity.getLatitude(), entity.getLongitude()));
-            mo.title(entity.getTitle());
-            mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
-            Marker marker = mMap.addMarker(mo);
-            StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
+            if (radius != -1) {
+                float[] result = new float[3];
+                Location.distanceBetween(startCoordinate.latitude, startCoordinate.longitude, entity.getLatitude(), entity.getLongitude(), result);
+                if (radius >= result[0]) {
+                    MarkerOptions mo = new MarkerOptions();
+                    mo.position(new LatLng(entity.getLatitude(), entity.getLongitude()));
+                    mo.title(entity.getTitle());
+                    mo.icon(BitmapDescriptorFactory.fromResource(entity.getCategory().get(0).getResource()));
+                    Marker marker = mMap.addMarker(mo);
+                    StoCache.INSTANCE.addStoByMarker(marker.getId(), entity);
+                }
+            }
         }
 
-        LatLng startCoordinate = getStartCoordinate();
-
-        myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
 
         mMap.setOnInfoWindowClickListener(new InfoClickListener(this));
 
@@ -128,6 +136,7 @@ public class LocationFinderActivity extends FragmentActivity {
             }
         } catch (Exception e) {
             Log.e("ESTEO", "Couldn't get coordinates: " + e.getMessage());
+            //in case of any troubles set current place to Kiev
             coordinate = new LatLng(50.450070, 30.523268);
         }
         return coordinate;

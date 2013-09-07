@@ -2,9 +2,9 @@
 <resources>
     <!--Main screen-->
     <string name="app_name">Esteo - Справочная автосервисов</string>
-    <string name="main_screen_search">Что ищем?</string>
-    <string name="main_screen_service_type">Выберите тип сервиса?</string>
-    <string name="main_screen_start_address">Откуда начинать поиск?</string>
+    <string name="main_screen_search">Что ищем</string>
+    <string name="main_screen_service_type">Выберите тип сервиса</string>
+    <string name="main_screen_start_address">Откуда начинать поиск</string>
     <string name="main_rb_gps">Мое местоположение</string>
     <string name="main_rb_input_address">От адресса:</string>
     <string name="main_screen_radius">Укажите радиус поиска сервиса в км</string>

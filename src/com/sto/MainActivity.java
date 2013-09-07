@@ -23,24 +23,25 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 //import com.google.android.maps.GeoPoint;
 
 
-public class STOActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
+public class MainActivity extends Activity implements OnSeekBarChangeListener, OnItemSelectedListener, AdapterView.OnItemClickListener {
 
+    public static final String IS_MY_LOC = "isMyLoc";
+    public static final String DEST_COORDINATES = "destCoordinates";
+    public static final String CATEGORY = "category";
+    public static final String RADIUS = "radius";
     boolean isMyLocation = true;
     double[] destinationAddress;
     String categoryToDisplay;
+    int radius;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StoCache.INSTANCE.initialize(this, getResources().openRawResource(R.raw.insert_statements));
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_main);
 
         Spinner spinner = (Spinner) findViewById(R.id.layers_spinner);
 
@@ -54,7 +55,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
 
         SeekBar sb = (SeekBar) findViewById(R.id.radiusSeekBar);
         sb.setMax(10);
-        sb.setProgress(5);
+        sb.setProgress(10);
         sb.setOnSeekBarChangeListener(this);
 
         final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
@@ -74,7 +75,7 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
             }
         };
 
-        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.item_list));
+        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_address));
         autoCompView.setOnItemClickListener(this);
 
         findViewById(R.id.gps_rb).setOnClickListener(listener);
@@ -97,10 +98,11 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
     }
 
     private void start() {
-        Intent intent = new Intent(STOActivity.this, LocationFinderActivity.class);
-        intent.putExtra("isMyLoc", isMyLocation);
-        intent.putExtra("destCoordinates", destinationAddress);
-        intent.putExtra("category", categoryToDisplay);
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        intent.putExtra(IS_MY_LOC, isMyLocation);
+        intent.putExtra(DEST_COORDINATES, destinationAddress);
+        intent.putExtra(CATEGORY, categoryToDisplay);
+        intent.putExtra(RADIUS, radius);
         startActivity(intent);
 
     }
@@ -126,8 +128,10 @@ public class STOActivity extends Activity implements OnSeekBarChangeListener, On
         String value = null;
         if (progress == seekBar.getMax()) {
             value = "max";
+            radius = -1;
         } else {
-            value = Integer.toString(progress + 2) + " km";
+            radius = progress + 2;
+            value = radius + " km";
         }
         tv.setText(value);
     }

@@ -28,35 +28,38 @@
 
     <application
             android:hardwareAccelerated="true"
-            android:icon="@drawable/ic_launcher"
+            android:icon="@drawable/app_icon"
             android:label="@string/app_name">
 
-
-        <!--<meta-data
-                android:name="com.google.android.maps.v2.API_KEY"
-                android:value="AIzaSyBKCP3E40Ow86bjAYNByGiyy3bM9716PiY"/>-->
+        <!--debug-->
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
                 android:value="AIzaSyB0SMKpblw3BFrHJZIueYjhjtd2kog6utw"/>
 
         <activity
-                android:name="STOActivity"
+                android:name=".SplashScreenActivity"
                 android:label="@string/app_name"
-                android:logo="@drawable/logo"
-                android:icon="@drawable/logo"
+                android:theme="@android:style/Theme.Black.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".MainActivity"
+                android:label="@string/app_name"
+                android:icon="@drawable/app_icon"
                 android:theme="@android:style/Theme.DeviceDefault">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
-                android:name=".LocationFinderActivity"
+                android:name=".MapActivity"
                 android:label="@string/app_name">
         </activity>
-        <activity android:name=".ShowItems"/>
-        <activity android:name=".ShowItemDescription"/>
     </application>
 
 </manifest>
