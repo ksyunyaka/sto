@@ -18,12 +18,12 @@ import com.google.android.gms.maps.model.*;
 import com.sto.entity.STO;
 import com.sto.listeners.ChangeLocationListener;
 import com.sto.listeners.InfoClickListener;
-import com.sto.route.DownloadTask;
+import com.sto.tasks.DownloadTask;
 import com.sto.utils.StoCache;
+import com.sto.utils.StoConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,7 +38,7 @@ public class MapActivity extends FragmentActivity {
 
     private GoogleMap mMap;
     ChangeLocationListener locationListener;
-    private boolean isMyLocation;
+    private boolean isUserLocation;
     private double[] startAddress;
     private String category;
     private int radius;
@@ -46,7 +46,7 @@ public class MapActivity extends FragmentActivity {
     boolean gpsEnabled;
     boolean networkEnabled;
 
-    private Marker myMarker;
+    private Marker userMarker;
     private Polyline route;
 
     @Override
@@ -55,15 +55,13 @@ public class MapActivity extends FragmentActivity {
         setContentView(R.layout.activity_map);
 
         Bundle extras = getIntent().getExtras();
-        isMyLocation = extras.getBoolean(MainActivity.IS_MY_LOC);
+        isUserLocation = extras.getBoolean(MainActivity.IS_MY_LOC);
         startAddress = extras.getDoubleArray(MainActivity.START_ADDRESS);
         category = extras.getString(MainActivity.CATEGORY);
         radius = extras.getInt(MainActivity.RADIUS) * 1000;
-
         checkLocationProviderSettings();
         setUpMapIfNeeded();
-        addLocationListener();
-        mMap.setOnInfoWindowClickListener(new InfoClickListener(this, isMyLocation));
+        mMap.setOnInfoWindowClickListener(new InfoClickListener(this, isUserLocation));
     }
 
     private void addLocationListener() {
@@ -72,7 +70,7 @@ public class MapActivity extends FragmentActivity {
             if (locationListener != null) {
                 locationManager.removeUpdates(locationListener);
             }
-            locationListener = new ChangeLocationListener(myMarker, mMap);
+            locationListener = new ChangeLocationListener(userMarker, mMap);
             if (gpsEnabled) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, REFRESH_FREQUENCY, 0, locationListener);
             } else if (networkEnabled) {
@@ -86,10 +84,14 @@ public class MapActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setUpMapIfNeeded();
         checkLocationProviderSettings();
-        addLocationListener();
-        if(isMyLocation){
-            locationListener.setRoute(null);
+        if (!isUserLocation) {
+            if (locationListener != null && route != null) {
+                locationListener.removeRoute();
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                locationManager.removeUpdates(locationListener);
+            }
         }
     }
 
@@ -129,7 +131,7 @@ public class MapActivity extends FragmentActivity {
         }
 
         LatLng startCoordinate = getStartCoordinate();
-        myMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title("Я"));
+        userMarker = mMap.addMarker(new MarkerOptions().position(startCoordinate).title(StoConstants.USER_TITLE));
 
         for (STO entity : stoEntitiesToDisplay) {
             if (isEntityInRadius(entity, startCoordinate)) {
@@ -144,7 +146,10 @@ public class MapActivity extends FragmentActivity {
 
         CameraUpdate center = CameraUpdateFactory.newLatLng(startCoordinate);
         mMap.moveCamera(center);
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(10));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(StoConstants.DEFAULT_ZOOM));
+        if (isUserLocation) {
+            addLocationListener();
+        }
     }
 
     private boolean isEntityInRadius(STO entity, LatLng startCoordinate) {
@@ -165,7 +170,7 @@ public class MapActivity extends FragmentActivity {
     private LatLng getStartCoordinate() {
         LatLng coordinate;
         try {
-            if (isMyLocation) {
+            if (isUserLocation) {
                 Location location = getCurrentLocation();
                 coordinate = new LatLng(location.getLatitude(), location.getLongitude());
             } else {
@@ -215,7 +220,7 @@ public class MapActivity extends FragmentActivity {
         if (route != null) {
             route.remove();
         }
-        LatLng start = myMarker.getPosition();
+        LatLng start = userMarker.getPosition();
         AsyncTask<LatLng, Void, PolylineOptions> routeTask = new DownloadTask().execute(new LatLng[]{start, target});
         try {
             PolylineOptions polylineOptions = routeTask.get();

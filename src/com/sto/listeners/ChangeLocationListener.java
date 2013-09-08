@@ -9,7 +9,8 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.*;
-import com.sto.route.DownloadTask;
+import com.sto.tasks.DownloadTask;
+import com.sto.utils.StoConstants;
 
 import java.util.List;
 
@@ -28,11 +29,16 @@ public class ChangeLocationListener implements LocationListener {
         this.route = route;
     }
 
+    public void removeRoute() {
+        route.remove();
+        route = null;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         LatLng coordinate = new LatLng(location.getLatitude(), location.getLongitude());
         userMarker.remove();
-        userMarker = map.addMarker(new MarkerOptions().position(coordinate).title("Я"));
+        userMarker = map.addMarker(new MarkerOptions().position(coordinate).title(StoConstants.USER_TITLE));
         if (route != null) {
             List<LatLng> routePoints = route.getPoints();
             LatLng target = routePoints.get(routePoints.size() - 1);
@@ -46,6 +52,10 @@ public class ChangeLocationListener implements LocationListener {
 
             }
         }
+        float zoom = map.getCameraPosition().zoom;
+        CameraUpdate center = CameraUpdateFactory.newLatLng(coordinate);
+        map.moveCamera(center);
+        map.animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
     @Override

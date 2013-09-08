@@ -17,9 +17,7 @@ public enum Category {
     SPARES(8, "Автозапчасти", R.drawable.spares),
     DISASSEMBLE(9, "Разборки", R.drawable.disassemble),
     WASHES(10, "Автомойки", R.drawable.washes),
-    TIRE_SERVICE(11, "Шиномонтажи", R.drawable.tier_service),
-    FUELING(12, "Заправки (АЗС)", R.drawable.fueling),
-    CAR_DEALERS(13, "Автосалоны", R.drawable.car_dealers);
+    FUELING(12, "Заправки (АЗС)", R.drawable.fueling);
 
 
     private int id;

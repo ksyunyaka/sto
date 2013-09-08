@@ -16,6 +16,7 @@ import com.sto.MapActivity;
 import com.sto.R;
 import com.sto.entity.STO;
 import com.sto.utils.StoCache;
+import com.sto.utils.StoConstants;
 
 public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
 
@@ -29,6 +30,9 @@ public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+        if(marker.getTitle().equals(StoConstants.USER_TITLE)){
+            return;
+        }
         final STO entity = StoCache.INSTANCE.getStoByMarkerId(marker.getId());
 
         AlertDialog.Builder dialogue = new AlertDialog.Builder(parent);
@@ -41,22 +45,26 @@ public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
         if (!entity.getTelephone().equals("")) {
             TextView telephone = new TextView(parent);
             telephone.setText(parent.getResources().getString(R.string.info_window_telephone) + Html.fromHtml(entity.getTelephone()).toString().replaceAll("\n", ""));
+            telephone.setTextSize(20);
             parentLayout.addView(telephone);
         }
 
         if (!entity.getTime().equals("")) {
             TextView time = new TextView(parent);
             time.setText(parent.getResources().getString(R.string.info_window_time) + Html.fromHtml(entity.getTime()).toString().replaceAll("\n", ""));
+            time.setTextSize(20);
             parentLayout.addView(time);
         }
 
         TextView address = new TextView(parent);
         address.setText(parent.getResources().getString(R.string.info_window_address) + Html.fromHtml(entity.getShortHistory()).toString().replaceAll("\n", ""));
+        address.setTextSize(20);
         parentLayout.addView(address);
 
         if (!entity.getSite().equals("")) {
             TextView site = new TextView(parent);
             site.setClickable(true);
+            site.setTextSize(20);
             SpannableString text = new SpannableString (parent.getResources().getString(R.string.info_window_site) + entity.getSite());
             Linkify.addLinks(text, Linkify.WEB_URLS);
             site.setText(text);
@@ -66,6 +74,7 @@ public class InfoClickListener implements GoogleMap.OnInfoWindowClickListener {
         if (!entity.getWashType().equals("")) {
             TextView washType = new TextView(parent);
             washType.setText(parent.getResources().getString(R.string.info_window_wash_type) + Html.fromHtml(entity.getWashType()).toString().replaceAll("\n", ""));
+            washType.setTextSize(20);
             parentLayout.addView(washType);
         }
 
