@@ -33,9 +33,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class MapActivity extends FragmentActivity {
 
-    private static final long REFRESH_FREQUENCY = TimeUnit.MINUTES.toMillis(1);
-
-
     private GoogleMap mMap;
     ChangeLocationListener locationListener;
     private boolean isUserLocation;
@@ -72,9 +69,9 @@ public class MapActivity extends FragmentActivity {
             }
             locationListener = new ChangeLocationListener(userMarker, mMap);
             if (gpsEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, REFRESH_FREQUENCY, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, StoConstants.REFRESH_FREQUENCY, 0, locationListener);
             } else if (networkEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, REFRESH_FREQUENCY, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, StoConstants.REFRESH_FREQUENCY, 0, locationListener);
             }
         } catch (Exception e) {
             Log.e("ESTEO", "Can't set location updates listener", e);
@@ -109,7 +106,6 @@ public class MapActivity extends FragmentActivity {
     protected void onStart() {
         super.onStart();
     }
-
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
@@ -179,7 +175,7 @@ public class MapActivity extends FragmentActivity {
         } catch (Exception e) {
             Log.e("ESTEO", "Couldn't get coordinates: " + e.getMessage());
             //in case of any troubles set current place to Kiev
-            coordinate = new LatLng(50.450070, 30.523268);
+            coordinate = new LatLng(StoConstants.DEFAULT_LOCATION[0], StoConstants.DEFAULT_LOCATION[1]);
         }
         return coordinate;
     }
