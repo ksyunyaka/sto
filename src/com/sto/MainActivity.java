@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener, O
 
         SeekBar sb = (SeekBar) findViewById(R.id.radiusSeekBar);
         sb.setMax(10);
-        sb.setProgress(10);
+        sb.setProgress(5);
         sb.setOnSeekBarChangeListener(this);
 
         final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);

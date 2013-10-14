@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -18,13 +18,11 @@ import com.google.android.gms.maps.model.*;
 import com.sto.entity.STO;
 import com.sto.listeners.ChangeLocationListener;
 import com.sto.listeners.InfoClickListener;
-import com.sto.tasks.DownloadTask;
 import com.sto.utils.StoCache;
 import com.sto.utils.StoConstants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,7 +42,6 @@ public class MapActivity extends FragmentActivity {
     boolean networkEnabled;
 
     private Marker userMarker;
-    private Polyline route;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,13 +80,6 @@ public class MapActivity extends FragmentActivity {
         super.onResume();
         setUpMapIfNeeded();
         checkLocationProviderSettings();
-        if (!isUserLocation) {
-            if (locationListener != null && route != null) {
-                locationListener.removeRoute();
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                locationManager.removeUpdates(locationListener);
-            }
-        }
     }
 
     private void checkLocationProviderSettings() {
@@ -213,18 +203,13 @@ public class MapActivity extends FragmentActivity {
     }
 
     public void buildRoute(LatLng target) {
-        if (route != null) {
-            route.remove();
-        }
         LatLng start = userMarker.getPosition();
-        AsyncTask<LatLng, Void, PolylineOptions> routeTask = new DownloadTask().execute(new LatLng[]{start, target});
-        try {
-            PolylineOptions polylineOptions = routeTask.get();
-            route = mMap.addPolyline(polylineOptions);
-            locationListener.setRoute(route);
-        } catch (Exception e) {
-            Log.e("ESTEO", "can't build route", e);
-        }
+        StringBuilder uri = new StringBuilder("http://maps.google.com/maps?saddr=");
+        uri.append(start.latitude).append(",").append(start.longitude);
+        uri.append("&daddr=");
+        uri.append(target.latitude).append(",").append(target.longitude);
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri.toString()));
+        startActivity(intent);
     }
 
 }

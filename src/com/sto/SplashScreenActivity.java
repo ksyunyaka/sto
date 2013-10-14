@@ -8,7 +8,7 @@ import com.sto.utils.StoCache;
 
 public class SplashScreenActivity extends Activity {
 
-    private static final long SPLASH_TIME_OUT = 500;
+    private static final long SPLASH_TIME_OUT = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
